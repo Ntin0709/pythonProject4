@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Item</title>
+</head>
+<body>
+    <h1>Edit Item</h1>
+
+    <form action="/edit_item/{{ item_index }}" method="POST">
+        <label for="item">Item:</label>
+        <input type="text" id="item" name="item" value="{{ item.item }}" required>
+        <br>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" value="{{ item.quantity }}" required>
+        <br>
+
+        <label for="rate">Rate:</label>
+        <input type="number" id="rate" name="rate" step="0.01" value="{{ item.rate }}" required>
+        <br>
+
+        <input type="submit" value="Update Item">
+    </form>
+</body>
+</html>

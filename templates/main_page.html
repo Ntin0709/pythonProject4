@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.2/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-top: 40px;
+        }
+
+        .table {
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th,
+        .table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .table thead th {
+            background-color: #f1f3f5;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .party-name-link {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .party-name-link:hover {
+            text-decoration: underline;
+        }
+
+        /* .create-bill-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        } */
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        
+        <div style="display: flex;justify-content: space-between;">
+        <h1 style="width: 70%;">Main Page</h1>
+        <div >
+        <a class="btn btn-primary create-bill-btn" href="/create-bill">Create Bill</a>
+        <a class="btn btn-primary create-party-btn" data-bs-toggle="modal" data-bs-target="#addPartyModal">Add Party</a>
+        </div>
+        </div>
+        <hr>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Party Name</th>
+                    <th>Total Remaining Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for party in parties %}
+                <tr>
+                    <td>
+                        <a class="party-name-link" href="/party-bills/{{ party.party_name }}">{{ party.party_name }}</a>
+                    </td>
+                    <td>{{(party.total_amount|default('0')) if party.total_amount is defined else '0' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        
+        
+
+        <!-- Add Party Modal -->
+        <div class="modal fade" id="addPartyModal" tabindex="-1" aria-labelledby="addPartyModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addPartyModalLabel">Add Party</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/add-party" method="POST">
+                            <div class="mb-3">
+                                <label for="partyNameInput" class="form-label">Party Name</label>
+                                <input type="text" class="form-control" id="partyNameInput" name="party_name" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

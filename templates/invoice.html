@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.2/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        /* Add your custom CSS styles here */
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Invoice</h1>
+        <br>
+        <table class="table table-bordered">
+            <!-- ... -->
+            <thead>
+                <tr>
+                    <th>Sr No</th>
+                    <th>Description</th>
+                    <th>Meters</th>
+                    <th>Rate</th>
+                    <th>Total Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.sr_no }}</td>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.meters }}</td>
+                    <td>{{ item.rate }}</td>
+                    <td>{{ item.total_amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <div>
+            <img src="{{ selected_image }}" alt="Selected Image" class="item-image">
+        </div>
+    </div>
+
+    <!-- Add Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Details</title>
+</head>
+
+<body>
+    <h1>Bill Details</h1>
+
+    <h2>Bill No: {{ bill['bill_no'] }}</h2>
+    <h3>Party Name: {{ bill['party_name'] }}</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Sr No</th>
+                <th>Item Name</th>
+                <th>Meters</th>
+                <th>Rate</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item['sr_no'] }}</td>
+                <td>{{ item['item_name'] }}</td>
+                <td>{{ item['meters'] }}</td>
+                <td>{{ item['rate'] }}</td>
+                <td>{{ item['total'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+</html>

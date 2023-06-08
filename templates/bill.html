@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Bill</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            padding: 10px;
+            margin: 0;
+            text-align: left;
+            max-width:1600px ;
+            min-width: 1200px;
+        }
+    
+        .container {
+            max-width: 1200px;
+            margin: 0;
+            text-align: left;
+        }
+    
+        h2 {
+            color: #333;
+            text-align: left;
+        }
+    
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: left;
+        }
+    
+        select {
+            width: 100%;
+            padding: 5px;
+            font-size: 14px;
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            text-align: left;
+        }
+    
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+    
+        .btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: left;
+        }
+    
+        .btn:hover {
+            background-color: #45a049;
+        }
+    
+        .item-row input[type="text"],
+        .item-row select {
+            width: 100%;
+            padding: 5px;
+            font-size: 14px;
+        }
+    
+        .item-row .selected-image {
+            max-width: 100px;
+            max-height: 100px;
+            display: none;
+            margin-top: 5px;
+        }
+    
+        #billNumber {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+    
+        .selected-image {
+            max-width: 100px;
+            max-height: 100px;
+            display: block;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+    
+        /* Additional Styles */
+    
+        /* Adjust column sizes */
+        th:nth-child(5),
+        td:nth-child(5),
+        th:nth-child(6),
+        td:nth-child(6) {
+            width: 80px;
+        }
+    
+        /* Make Description column larger */
+        th:nth-child(3),
+        td:nth-child(3) {
+            width: 300px;
+        }
+    
+        /* Style the Add Row button */
+        .btn-add-row {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: left;
+        }
+    
+        /* Style the Delete button */
+        .btn-delete {
+            padding: 6px 12px;
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: left;
+        }
+    
+        /* Style the image container */
+        .image-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    
+        /* Style the selected image */
+        .selected-image {
+            max-width: 100px;
+            max-height: 100px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+    
+</head>
+<body>
+    <div style="max-width: 1200px; margin: 0;">
+        <div style="display: flex;justify-content: space-between;">
+        <div style="width: 70%;"><h2>Create Bill</h2></div>
+        <div style="margin-top: 30px;"><a class="btn btn-primary back-link" style="text-decoration: none;" href="/main">Back to Main Page</a></div>
+        </div>
+        <label for="partyName">Party Name:</label>
+        <select id="partyName" onchange="generateBill()">
+            <option value="" selected disabled>Select Party</option>
+        </select>
+        <div id="billNumber"></div>
+        <div class="container">
+        <table id="itemTable">
+            <thead>
+                <tr>
+                    <th>Sr. No</th>
+                    <th>Item</th>
+                    <th>Description/Image</th>
+                    <th>Description Text</th>
+                    <th>Meters</th>
+                    <th>Rate</th>
+                    <th>Total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="6">Total Amount:</td>
+                    <td id="totalAmountCell"></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+        <button type="button" class="btn-add-row" onclick="addRow()">Add Row</button>
+        <!-- <button type="button" class="btn" onclick="saveBill()">Save Bill</button> -->
+        <button type="button" class="btn" id="generateBillButton" onclick="generateBillPDF()">Generate Bill</button>
+    </div>
+
+    <script>
+        function calculateTotalAmount() {
+            var table = document.getElementById('itemTable');
+            var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            var totalAmountCell = document.getElementById('totalAmountCell');
+            var totalAmount = 0;
+
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                var meters = parseFloat(row.cells[4].querySelector("input").value);
+                var rate = parseFloat(row.cells[5].querySelector("input").value);
+
+                if (!isNaN(meters) && !isNaN(rate)) {
+                    var total = meters * rate;
+                    totalAmount += total;
+                }
+            }
+
+            totalAmountCell.textContent = totalAmount.toFixed(2);
+        }
+
+        function addRow() {
+            var table = document.getElementById('itemTable').getElementsByTagName('tbody')[0];
+            var newRow = table.insertRow();
+
+            var rowCount = table.rows.length;
+            var srNoCell = newRow.insertCell();
+            srNoCell.innerHTML = rowCount;
+
+            var itemCell = newRow.insertCell();
+            itemCell.innerHTML = '<input type="text">';
+
+            var descriptionImageCell = newRow.insertCell();
+            var selectImage = document.createElement("select");
+            selectImage.onchange = function() { selectDescriptionImage(this); };
+            var option1 = document.createElement("option");
+            option1.value = "";
+            option1.text = "Select an option";
+            var option2 = document.createElement("option");
+            option2.value = "image1";
+            option2.text = "Image 1";
+            option2.setAttribute("data-image", "static/images/image1.jpg");
+            var option3 = document.createElement("option");
+            option3.value = "image2";
+            option3.text = "Image 2";
+            option3.setAttribute("data-image", "static/images/image2.jpg");
+            var option4 = document.createElement("option");
+            option4.value = "image3";
+            option4.text = "Image 3";
+            option4.setAttribute("data-image", "static/images/image3.jpg");
+            selectImage.appendChild(option1);
+            selectImage.appendChild(option2);
+            selectImage.appendChild(option3);
+            selectImage.appendChild(option4);
+            descriptionImageCell.appendChild(selectImage);
+
+            var descriptionTextCell = newRow.insertCell();
+            descriptionTextCell.innerHTML = '<input type="text">';
+
+            var metersCell = newRow.insertCell();
+            metersCell.innerHTML = '<input type="text" oninput="calculateTotal.call(this.parentNode)">';
+
+            var rateCell = newRow.insertCell();
+            rateCell.innerHTML = '<input type="text" oninput="calculateTotal.call(this.parentNode)">';
+
+            var totalCell = newRow.insertCell();
+
+            var deleteCell = newRow.insertCell();
+            deleteCell.innerHTML = '<button type="button" class="btn-delete" onclick="deleteRow(this)">Delete</button>';
+            
+        }
+
+        function deleteRow(button) {
+            var table = document.getElementById('itemTable').getElementsByTagName('tbody')[0];
+            var row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+
+            var rowCount = table.rows.length;
+            for (var i = 0; i < rowCount; i++) {
+                table.rows[i].cells[0].innerHTML = i + 1;
+            }
+            calculateTotalAmount();
+        }
+
+        function calculateTotal() {
+            var row = this.parentNode;
+            var meters = parseFloat(row.cells[4].querySelector("input").value);
+            var rate = parseFloat(row.cells[5].querySelector("input").value);
+            var totalCell = row.cells[6];
+
+            if (isNaN(meters) || isNaN(rate)) {
+                totalCell.textContent = "";
+            } else {
+                var total = meters * rate;
+                totalCell.textContent = total.toFixed(2);
+            }
+            calculateTotalAmount();
+        }
+
+        function selectDescriptionImage(select) {
+            var row = select.parentNode.parentNode;
+            var selectedIndex = select.selectedIndex;
+            var selectedOption = select.options[selectedIndex];
+            var selectedValue = selectedOption.value;
+            var selectedImage = selectedOption.getAttribute("data-image");
+
+            var descriptionImageCell = row.cells[2];
+            var descriptionImage = descriptionImageCell.querySelector(".selected-image");
+
+            if (selectedValue === "") {
+                if (descriptionImage) {
+                    descriptionImage.style.display = "none";
+                }
+            } else {
+                if (descriptionImage) {
+                    descriptionImage.src = selectedImage;
+                    descriptionImage.style.display = "inline";
+                } else {
+                    descriptionImage = document.createElement("img");
+                    descriptionImage.src = selectedImage;
+                    descriptionImage.className = "selected-image";
+                    descriptionImageCell.appendChild(descriptionImage);
+                }
+            }
+        }
+
+        function generateBill() {
+            var partyNameSelect = document.getElementById('partyName');
+            var selectedPartyName = partyNameSelect.options[partyNameSelect.selectedIndex].textContent;
+            if (selectedPartyName === "") {
+                return;
+            }
+
+            var randomNum = Math.floor(Math.random() * 10000);
+            var billNo = selectedPartyName + "_" + randomNum;
+
+            var billNumberElement = document.getElementById('billNumber');
+            billNumberElement.textContent = "Bill Number: " + billNo;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchPartyData().catch(console.error);
+        });
+
+        async function fetchPartyData() {
+        var partyNameSelect = document.getElementById('partyName');
+        var selectedPartyName = partyNameSelect.value;
+
+        try {
+            // Replace '/get-partynames' with your actual Flask API endpoint URL
+            var response = await fetch('/get-partynames');
+            var data = await response.json();
+
+            partyNameSelect.innerHTML = '<option value="" selected disabled>Select Party</option>'; // Add default option
+
+            data.forEach(function(party) {
+                var option = document.createElement('option');
+                option.value = party.id;
+                option.textContent = party.name;
+                partyNameSelect.appendChild(option);
+            });
+
+            if (selectedPartyName) {
+                partyNameSelect.value = selectedPartyName;
+                generateBill();
+            }
+        } catch (error) {
+            console.error('Error fetching party data:', error);
+        }
+    }
+    function saveBill() {
+  var partyNameSelect = document.getElementById('partyName');
+  var selectedPartyId = partyNameSelect.value;
+  var selectedPartyName = partyNameSelect.options[partyNameSelect.selectedIndex].textContent;
+
+  var billNumberElement = document.getElementById('billNumber');
+  var billNo = billNumberElement.textContent.replace("Bill Number: ", "");
+
+  var table = document.getElementById('itemTable').getElementsByTagName('tbody')[0];
+  var rowCount = table.rows.length;
+  
+  var totalAmountCell = document.getElementById('totalAmountCell');
+  var totalAmount = parseFloat(totalAmountCell.textContent);
+
+  var items = [];
+  for (var i = 0; i < rowCount; i++) {
+    var row = table.rows[i];
+    var item = {
+      srNo: row.cells[0].textContent,
+      item: row.cells[1].querySelector('input').value,
+      descriptionImage: row.cells[2].querySelector('select').value,
+      descriptionText: row.cells[3].querySelector('input').value,
+      meters: row.cells[4].querySelector('input').value,
+      rate: row.cells[5].querySelector('input').value,
+      total: row.cells[6].textContent
+    };
+    items.push(item);
+  }
+
+  var data = {
+    partyId: selectedPartyId,
+    partyName: selectedPartyName,
+    billNo: billNo,
+    items: items,
+    total_amount:totalAmount
+  };
+
+  fetch('/save-bill', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+    .then(response => response.json())
+    .then(responseData => {
+      console.log('Bill saved:', responseData);
+      // Display success message
+    //   alert('Bill saved successfully.');
+
+      // Refresh the page
+    //   location.reload();
+    })
+    .catch(error => {
+      console.error('Error saving bill:', error);
+      // Optionally, display an error message or handle the error
+    });
+}
+function generateBillPDF() {
+  saveBill();
+  var partyNameSelect = document.getElementById('partyName');
+  var selectedPartyId = partyNameSelect.value;
+  var selectedPartyName = partyNameSelect.options[partyNameSelect.selectedIndex].textContent;
+
+  var billNumberElement = document.getElementById('billNumber');
+  var billNo = billNumberElement.textContent.replace("Bill Number: ", "");
+
+  var table = document.getElementById('itemTable').getElementsByTagName('tbody')[0];
+  var rowCount = table.rows.length;
+
+  var items = [];
+  for (var i = 0; i < rowCount; i++) {
+    var row = table.rows[i];
+    var item = {
+      srNo: row.cells[0].textContent,
+      item: row.cells[1].querySelector('input').value,
+      descriptionImage: row.cells[2].querySelector('select').value,
+      descriptionText: row.cells[3].querySelector('input').value,
+      meters: row.cells[4].querySelector('input').value,
+      rate: row.cells[5].querySelector('input').value,
+      total: row.cells[6].textContent
+    };
+    items.push(item);
+  }
+
+  var data = {
+    partyId: selectedPartyId,
+    partyName: selectedPartyName,
+    billNo: billNo,
+    items: items
+  };
+
+  fetch('/generate_pdf', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+.then(responseData => {
+  const imagePaths = responseData.imagePaths;
+  console.log(imagePaths)
+  // Function to download an image given its path and desired file name
+  const downloadImage = (path, fileName) => {
+    const link = document.createElement('a');
+    link.href = path;
+    link.download = fileName;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Loop through the image paths
+  imagePaths.forEach((imagePath, index) => {
+    const fileName = `bill_${index + 1}.png`; // Set desired file name
+    downloadImage(imagePath, fileName);
+  });
+})
+.then(responseData => {
+      console.log('Bill saved:', responseData);
+      // Display success message
+      alert('Bill saved successfully.');
+
+      // Refresh the page
+      location.reload();
+    })
+
+.catch(error => {
+  console.error('Error generating bill images:', error);
+//   const delay = 10000; //
+  // Optionally, display an error message or handle the error
+});
+
+
+}
+
+    </script>
+</body>
+</html>

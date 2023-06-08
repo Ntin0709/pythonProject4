@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Party Bills</title>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.2/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-top: 40px;
+        }
+
+        .table {
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th,
+        .table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .table thead th {
+            background-color: #f1f3f5;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .bill-no-link {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .bill-no-link:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div style="display: flex;justify-content: space-between;">
+        <h1>Party Bills</h1>
+        <a class="btn btn-primary back-link" href="/main">Back to Main Page</a>
+        </div>
+        <h2>Party Name: {{ party_name }}</h2>
+        <hr>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Bill Number</th>
+                    <th>Total Amount</th>
+                    <th>Remaining Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bill in bills %}
+                <tr>
+                    <td>
+                        <a class="bill-no-link" href="">{{ bill.bill_no }}</a>
+                    </td>
+                    <td>{{ bill.total_amount }}</td>
+                    <td>{{ bill.remaining_amount }}</td>
+                    <td>
+                        {% if bill.paid_status == 0 %}
+                        <form action="/mark-paid/{{ bill.bill_no }}" method="POST">
+                            <button type="submit" class="btn btn-success">Mark Paid</button>
+                        </form>
+                        {% else %}
+                        Paid on {{ bill.paid_date }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    </div>
+
+    <!-- Add Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Function to download the party name image
+        // Function to download the party name image
+// Function to download the party_name.png file based on bill number
+const downloadPartyImage = (billNo) => {
+  const imageFileName = `${billNo}.png`;
+
+  const a = document.createElement('a');
+  a.style.display = 'none';
+  a.href = `/static/bills/${imageFileName}`;
+  a.download = imageFileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};
+
+// Wait for the DOM to load before accessing the bill number links
+document.addEventListener("DOMContentLoaded", () => {
+  // Get all the bill number links
+  const billNoLinks = document.querySelectorAll('.bill-no-link');
+  if (billNoLinks) {
+    billNoLinks.forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        const billNo = link.innerText.trim();
+        downloadPartyImage(billNo);
+      });
+    });
+  }
+});
+
+    </script>
+</body>
+
+</html>
