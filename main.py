@@ -1,19 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for,jsonify,send_file
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import Table, TableStyle
-from reportlab.lib import colors
-from reportlab.pdfgen import canvas
-from PyPDF2 import PdfReader, PdfWriter
 import os
-import pdfkit
 from flask import Flask, render_template, request, make_response
 import sqlite3
-from PyPDF2 import PdfWriter, PdfFileReader
 from flask import make_response
 from fpdf import FPDF
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
-from zipfile import *
 import datetime
 
 app = Flask(__name__, static_url_path='/static')
