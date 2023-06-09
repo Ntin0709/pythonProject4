@@ -61,7 +61,7 @@ filelock==3.11.0
 Flask==2.2.2
 Flask-Bcrypt==1.0.1
 flatbuffers==23.3.3
-fonttools==4.39.3
+fonttools
 fpdf==1.7.2
 fqdn==1.5.1
 frontend==0.0.3
