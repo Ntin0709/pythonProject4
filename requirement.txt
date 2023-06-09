@@ -3,4 +3,4 @@ Flask-Bcrypt==1.0.1
 db-sqlite3==0.0.1
 fpdf==1.7.2
 Pillow==9.5.0
-pdf2image
+pdf2image==1.16.3
