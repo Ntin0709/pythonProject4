@@ -4,8 +4,6 @@ from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 from PyPDF2 import PdfReader, PdfWriter
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 import os
 import pdfkit
 from flask import Flask, render_template, request, make_response
